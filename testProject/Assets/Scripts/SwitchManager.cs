@@ -5,19 +5,22 @@ using UnityEngine;
 public class SwitchManager : MonoBehaviour
 {
     [SerializeField]
-    private bool isPushed = false;
-    private int count = 0;
-    public bool IsPushed { get { return isPushed; } set { isPushed = value; } }
+    private int Count = 0;
     // Start is called before the first frame update
     void Start()
     {
+    }
+
+    void Update()
+    {
+
     }
 
     void onCollisionEnter2D(Collision collision)
     {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Block")
         {
-            count++;
+            Count++;
         }
     }
 
@@ -25,12 +28,12 @@ public class SwitchManager : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Block")
         {
-            count--;
+            Count--;
         }
     }
     // Update is called once per frame
-    void Update()
+    public bool IsPushed()
     {
-        IsPushed = (count > 0);
+        return (Count > 0);
     }
 }
