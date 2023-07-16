@@ -1,31 +1,51 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.ConstrainedExecution;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
     private Rigidbody2D rbody2D_;
 
+    // ジャンプ力.
     [SerializeField]
     private float jumpForce_ = 10f;
+
+    // 移動速度.
     [SerializeField]
     private float MoveSpeed_ = 5f;
+
+    // 落下速度上限.
     [SerializeField]
     private float FallMaxSpeed_ = 20f;
 
-    //プライベート変数
-    private GroundCheck groundCheck_;
-    private Vector3 respawnPoint;
+    // 落下復活地点.
+    [SerializeField]
+    private Vector3 fallRespawnPoint;
 
+    // 接地関連.
     [SerializeField]
     private bool isGround_ = false;
+    private GroundCheck groundCheck_;
+
+
+    [SerializeField]
+    float rot;
+    [SerializeField]
+    float rot_max = 100f;
+    [SerializeField]
+    float rot_decreasePerSecond = 0.5f;
+
     // Start is called before the first frame update
     void Start()
     {
         rbody2D_ = GetComponent<Rigidbody2D>();
         groundCheck_ = transform.GetChild(0).GetComponent<GroundCheck>();
-        respawnPoint = transform.position;
+        fallRespawnPoint = transform.position;
+
+        rot = rot_max;
     }
 
     private void FixedUpdate()
@@ -70,7 +90,7 @@ public class Player : MonoBehaviour
         if (isGround_)
         {
             pos.y = 10;
-            respawnPoint = pos;
+            fallRespawnPoint = pos;
         }
 
         //ジャンプ
@@ -88,9 +108,17 @@ public class Player : MonoBehaviour
         pos = transform.position;
         if (pos.y <= -10f)
         {
-            pos = respawnPoint;
+            pos = fallRespawnPoint;
             transform.position = pos;
         }
+
+        // ゲージ減少.
+        rot -= rot_decreasePerSecond * Time.deltaTime;
+        if(rot <= 0)
+        {
+            rot = 0;    // TODO　死亡.
+        }
+
     }
 
 }

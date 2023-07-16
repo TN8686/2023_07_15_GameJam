@@ -52,6 +52,11 @@ MonoBehaviour:
   jumpForce_: 15
   MoveSpeed_: 5
   FallMaxSpeed_: 20
+  fallRespawnPoint: {x: 0, y: 0, z: 0}
+  isGround_: 0
+  rot: 0
+  rot_max: 100
+  rot_decreasePerSecond: 0.5
 --- !u!212 &8312346579396647531
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -98,10 +103,10 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.64, y: 0.64}
+  m_Size: {x: 2.24, y: 0.32}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!50 &6795569921476659450
@@ -167,8 +172,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2, y: 2}
-    newSize: {x: 0.64, y: 0.64}
+    oldSize: {x: 14, y: 2}
+    newSize: {x: 2.24, y: 0.32}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
