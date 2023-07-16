@@ -15,11 +15,17 @@ public class Player : MonoBehaviour
     private float FallMaxSpeed_ = 20f;
 
     //プライベート変数
+    private GroundCheck groundCheck_;
+    private Vector3 respawnPoint;
+
+    [SerializeField]
     private bool isGround_ = false;
     // Start is called before the first frame update
     void Start()
     {
         rbody2D_ = GetComponent<Rigidbody2D>();
+        groundCheck_ = transform.GetChild(0).GetComponent<GroundCheck>();
+        respawnPoint = transform.position;
     }
 
     private void FixedUpdate()
@@ -27,8 +33,6 @@ public class Player : MonoBehaviour
         Vector2 v = rbody2D_.velocity;
         //地面当たり判定
         //接地判定を得る
-
-        isGround_ = true;   // TODO.
 
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))//右矢印おしたら
         {
@@ -58,6 +62,16 @@ public class Player : MonoBehaviour
     void Update()
     {
         Vector2 v = rbody2D_.velocity;
+        isGround_ = groundCheck_.IsGround();
+
+        var pos = transform.position;
+
+        // 復活ポイント設定.
+        if (isGround_)
+        {
+            pos.y = 10;
+            respawnPoint = pos;
+        }
 
         //ジャンプ
         if (Input.GetKeyDown(KeyCode.Space) && isGround_)
@@ -69,19 +83,14 @@ public class Player : MonoBehaviour
             // ジャンプ.
             rbody2D_.AddForce(new Vector2(0, jumpForce_), ForceMode2D.Impulse);
         }
-    }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(collision.gameObject.tag == "Ground")
+        // 座標が一定以下だったら復帰ポイントの上から復帰.
+        pos = transform.position;
+        if (pos.y <= -10f)
         {
-            Vector2 v = rbody2D_.velocity;
-            if(v.y < 0)
-            {
-                var p = transform.position;
-                
-                transform.position = p;
-            }
+            pos = respawnPoint;
+            transform.position = pos;
         }
     }
+
 }
