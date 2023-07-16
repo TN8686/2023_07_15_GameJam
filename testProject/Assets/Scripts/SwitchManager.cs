@@ -13,10 +13,10 @@ public class SwitchManager : MonoBehaviour
 
     void Update()
     {
-
+        Debug.Log(Count);
     }
 
-    void onCollisionEnter2D(Collision collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Block")
         {
@@ -24,7 +24,7 @@ public class SwitchManager : MonoBehaviour
         }
     }
 
-    void onCollisionExit2D(Collision collision)
+    void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Block")
         {
