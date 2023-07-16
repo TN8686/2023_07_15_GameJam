@@ -4,30 +4,35 @@ using UnityEngine;
 
 public class FenceManager : MonoBehaviour
 {
+    // 柵が降りる速度
     [SerializeField]
     private float _velocity = 0.15f;
 
+    // 柵が降りるマップチップ数の限度
     [SerializeField]
-    private float _downLimit = 0;
+    private float _downLimit = -2f;
 
-    //[SerializeField]
-    //GameObject _switch_;
-
+    // ボタンを押したときに開く(false)のか、ボタンを押したときに閉じるのか(true)
     [SerializeField]
-    private bool _reverseFlag = false;
+    private bool _isReversed = false;
 
+    // 連携するボタンを設定
     [SerializeField]
     private SwitchManager sm = null;
+
+    // ドアに物体が挟まらないように検知するオブジェクト
+    private FenceBlockingManager fbm = null;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        fbm = GetComponentInChildren<FenceBlockingManager>();
     }
 
     void Awake()
     {
         var pos = transform.GetChild(0).localPosition;
-        if (_reverseFlag)
+        if (_isReversed)
         {
             pos.y = _downLimit;
         }
@@ -38,13 +43,15 @@ public class FenceManager : MonoBehaviour
     void Update()
     {
         var pos = transform.GetChild(0).localPosition;
-        var downFlag = sm.IsPushed();
-        if (_reverseFlag)
+
+        var existsSignal = sm.IsPushed();
+        if (_isReversed)
         {
-            downFlag = !downFlag;
+            existsSignal = !existsSignal;
         }
 
-        if (downFlag)
+        // ボタンが押されているか、間になにか挟まっている間は閉まるように
+        if (existsSignal || fbm.IsBlocked())
         {
             if (pos.y > _downLimit)
             {

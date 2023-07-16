@@ -39,7 +39,7 @@ public class SwitchManager : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Block")
+        if (collision.gameObject.tag == "Player" || collision.gameObject.name == "Block")
         {
             _count++;
         }
@@ -47,7 +47,7 @@ public class SwitchManager : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Block")
+        if (collision.gameObject.tag == "Player" || collision.gameObject.name == "Block")
         {
             _count--;
         }
