@@ -126,7 +126,7 @@ Transform:
   m_Children:
   - {fileID: 6230744692524591653}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &819242770021647710
 MonoBehaviour:
@@ -145,9 +145,15 @@ MonoBehaviour:
   FallMaxSpeed_: 20
   fallRespawnPoint: {x: 0, y: 0, z: 0}
   isGround_: 0
-  rot: 0
-  rot_max: 100
+  rot_: 0
   rot_decreasePerSecond: 0.5
+  rot_max: 100
+  rotLine_01: 60
+  rotLine_02: 30
+  animatorControllerList_:
+  - {fileID: 9100000, guid: cf2c64a085f7e9a47b0487bc8859c914, type: 2}
+  - {fileID: 9100000, guid: 16a3adc4784fdf04ba0fcc740734b58f, type: 2}
+  - {fileID: 9100000, guid: 6e80e37f77a26f642b6f70ed8c479d86, type: 2}
 --- !u!212 &6137906660274245425
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -317,7 +323,7 @@ Animator:
   m_GameObject: {fileID: 2620275969434991387}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: cf2c64a085f7e9a47b0487bc8859c914, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

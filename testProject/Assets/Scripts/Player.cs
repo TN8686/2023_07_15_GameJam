@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
@@ -31,14 +32,28 @@ public class Player : MonoBehaviour
     private GroundCheck groundCheck_;
 
 
+    // 傷み度合.
     [SerializeField]
-    float rot;
-    [SerializeField]
-    float rot_max = 100f;
+    float rot_;
+    public float getRotRatio()
+    {
+        return rot_ / rot_max;
+    }
+
+    // 一秒あたりの減少量.
     [SerializeField]
     float rot_decreasePerSecond = 0.5f;
 
+    // それぞれのライン.
+    [SerializeField]
+    float rot_max = 100f;
+    [SerializeField]
+    float rotLine_01 = 60f;
+    [SerializeField]
+    float rotLine_02 = 30f;
 
+    [SerializeField]
+    private AnimatorController[] animatorControllerList_;
 
     private Animator animator_;
 
@@ -48,10 +63,12 @@ public class Player : MonoBehaviour
         rbody2D_ = GetComponent<Rigidbody2D>();
         groundCheck_ = transform.GetChild(0).GetComponent<GroundCheck>();
 
-        animator_ = GetComponent<Animator>(); ;
+        animator_ = GetComponent<Animator>();
         fallRespawnPoint = transform.position;
 
-        rot = rot_max;
+        rot_ = rot_max;
+
+        animator_.runtimeAnimatorController = animatorControllerList_[0];
     }
 
     private void FixedUpdate()
@@ -60,25 +77,32 @@ public class Player : MonoBehaviour
         //地面当たり判定
         //接地判定を得る
 
-        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))//右矢印おしたら
-        {
-            v.x = MoveSpeed_;
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
-        {
-            v.x = -MoveSpeed_;
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else
+        if (isDeath())
         {
             v.x = 0;
         }
-
+        else
+        {
+            if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))//右矢印おしたら
+            {
+                v.x = MoveSpeed_;
+                transform.localScale = new Vector3(1, 1, 1);
+            }
+            else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+            {
+                v.x = -MoveSpeed_;
+                transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else
+            {
+                v.x = 0;
+            }
+        }
         if (v.y < -FallMaxSpeed_)
         {
             v.y = -FallMaxSpeed_;
         }
+
 
         rbody2D_.velocity = v;
     }
@@ -99,7 +123,7 @@ public class Player : MonoBehaviour
         }
 
         //ジャンプ
-        if (Input.GetKeyDown(KeyCode.Space) && isGround_)
+        if (Input.GetKeyDown(KeyCode.Space) && isGround_ && !isDeath())
         {
             // 上下速度を初期化.
             v.y = 0;
@@ -110,7 +134,9 @@ public class Player : MonoBehaviour
         }
 
         // アニメーション管理.
-        if (isGround_)
+        setAnimatorController();    // アニメーターを選択.
+
+        if (isGround_)  // 地上.
         {
             if (v.x >= -0.1 && v.x <= 0.1)
             {
@@ -121,7 +147,7 @@ public class Player : MonoBehaviour
                 animator_.SetTrigger("Walk");
             }
         }
-        else
+        else             // 空中.
         {
             if (v.y > 0)
             {
@@ -142,12 +168,34 @@ public class Player : MonoBehaviour
         }
 
         // ゲージ減少.
-        rot -= rot_decreasePerSecond * Time.deltaTime;
-        if(rot <= 0)
+        rot_ -= rot_decreasePerSecond * Time.deltaTime;
+        if(isDeath())
         {
-            rot = 0;    // TODO　死亡.
+            rot_ = 0;
+            animator_.SetBool("Death", true);
         }
 
     }
 
+    // 現在の傷み度合に応じてアニメーターを選択します.
+    private void setAnimatorController()
+    {
+        if (rot_ > rotLine_01)
+        {
+            animator_.runtimeAnimatorController = animatorControllerList_[0];
+        }
+        else if(rot_ > rotLine_02)
+        {
+            animator_.runtimeAnimatorController = animatorControllerList_[1];
+        }
+        else
+        {
+            animator_.runtimeAnimatorController = animatorControllerList_[2];
+        }
+    }
+
+    public bool isDeath()
+    {
+        return (rot_ <= 0);
+    }
 }
