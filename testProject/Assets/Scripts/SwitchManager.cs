@@ -6,6 +6,7 @@ public class SwitchManager : MonoBehaviour
 {
     [SerializeField]
     private int _count = 0;
+    private float _downVelocity = 0.02f;
     // Start is called before the first frame update
     void Start()
     {
@@ -13,7 +14,24 @@ public class SwitchManager : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(_count);
+        var pos = transform.position;
+        var childPos = transform.GetChild(0).position;
+        if (IsPushed())
+        {
+            if (childPos.y > pos.y - 0.4)
+            {
+                childPos.y -= _downVelocity;
+            }
+        }
+        else
+        {
+            if (childPos.y < pos.y)
+            {
+                childPos.y += _downVelocity;
+            }
+        }
+
+        transform.GetChild(0).position = childPos;
     }
 
     void OnTriggerEnter2D(Collider2D collision)
