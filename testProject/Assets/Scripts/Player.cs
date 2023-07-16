@@ -38,11 +38,17 @@ public class Player : MonoBehaviour
     [SerializeField]
     float rot_decreasePerSecond = 0.5f;
 
+
+
+    private Animator animator_;
+
     // Start is called before the first frame update
     void Start()
     {
         rbody2D_ = GetComponent<Rigidbody2D>();
         groundCheck_ = transform.GetChild(0).GetComponent<GroundCheck>();
+
+        animator_ = GetComponent<Animator>(); ;
         fallRespawnPoint = transform.position;
 
         rot = rot_max;
@@ -61,7 +67,6 @@ public class Player : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
-
             v.x = -MoveSpeed_;
             transform.localScale = new Vector3(-1, 1, 1);
         }
@@ -81,8 +86,8 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector2 v = rbody2D_.velocity;
-        isGround_ = groundCheck_.IsGround();
+        Vector2 v = rbody2D_.velocity;          // 加速度を取得.
+        isGround_ = groundCheck_.IsGround();    // 接地判定を取得.
 
         var pos = transform.position;
 
@@ -102,6 +107,30 @@ public class Player : MonoBehaviour
 
             // ジャンプ.
             rbody2D_.AddForce(new Vector2(0, jumpForce_), ForceMode2D.Impulse);
+        }
+
+        // アニメーション管理.
+        if (isGround_)
+        {
+            if (v.x >= -0.1 && v.x <= 0.1)
+            {
+                animator_.SetTrigger("Wait");
+            }
+            else
+            {
+                animator_.SetTrigger("Walk");
+            }
+        }
+        else
+        {
+            if (v.y > 0)
+            {
+               animator_.SetTrigger("JumpUp");
+            }
+            else
+            {
+                animator_.SetTrigger("JumpDown");
+            }
         }
 
         // 座標が一定以下だったら復帰ポイントの上から復帰.
