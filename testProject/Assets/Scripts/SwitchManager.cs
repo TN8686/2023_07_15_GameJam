@@ -6,7 +6,10 @@ public class SwitchManager : MonoBehaviour
 {
     [SerializeField]
     private int _count = 0;
-    private float _downVelocity = 0.02f;
+
+    [SerializeField]
+    private float _velocity = 0.02f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,14 +23,14 @@ public class SwitchManager : MonoBehaviour
         {
             if (childPos.y > pos.y - 0.4)
             {
-                childPos.y -= _downVelocity;
+                childPos.y -= _velocity;
             }
         }
         else
         {
             if (childPos.y < pos.y)
             {
-                childPos.y += _downVelocity;
+                childPos.y += _velocity;
             }
         }
 
