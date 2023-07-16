@@ -5,7 +5,7 @@ using UnityEngine;
 public class SwitchManager : MonoBehaviour
 {
     [SerializeField]
-    private int Count = 0;
+    private int _count = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -13,14 +13,14 @@ public class SwitchManager : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(Count);
+        Debug.Log(_count);
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Block")
         {
-            Count++;
+            _count++;
         }
     }
 
@@ -28,12 +28,12 @@ public class SwitchManager : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Block")
         {
-            Count--;
+            _count--;
         }
     }
     // Update is called once per frame
     public bool IsPushed()
     {
-        return (Count > 0);
+        return (_count > 0);
     }
 }
