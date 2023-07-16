@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
@@ -67,6 +68,20 @@ public class Player : MonoBehaviour
 
             // ƒWƒƒƒ“ƒv.
             rbody2D_.AddForce(new Vector2(0, jumpForce_), ForceMode2D.Impulse);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Ground")
+        {
+            Vector2 v = rbody2D_.velocity;
+            if(v.y < 0)
+            {
+                var p = transform.position;
+                
+                transform.position = p;
+            }
         }
     }
 }
