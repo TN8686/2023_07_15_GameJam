@@ -23,10 +23,20 @@ public class FenceManager : MonoBehaviour
     // ドアに物体が挟まらないように検知するオブジェクト
     private FenceBlockingManager fbm = null;
 
+    [SerializeField]
+    private AudioClip Fence;
+    AudioSource audioSource;
+
+    // 下降しているか
+    private bool isDuringDownward;
+    // 上昇しているか
+    private bool isDuringUpward;
+
     // Start is called before the first frame update
     void Start()
     {
         fbm = GetComponentInChildren<FenceBlockingManager>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Awake()
@@ -53,9 +63,22 @@ public class FenceManager : MonoBehaviour
         // ボタンが押されているか、間になにか挟まっている間は閉まるように
         if (existsSignal || fbm.IsBlocked())
         {
+            //登り切っている時に下降するとサウンド
+            if (pos.y == 0)
+            {
+                audioSource.PlayOneShot(Fence);
+            }
             if (pos.y > _downLimit)
             {
+                // 上昇中から下降中に切り替わったタイミングでサウンド
+                if (isDuringUpward)
+                {
+                    audioSource.PlayOneShot(Fence);
+                }
+                // 位置を下げる
                 pos.y -= _velocity;
+                isDuringDownward = true;
+                isDuringUpward = false;
             }
             else
             {
@@ -64,9 +87,23 @@ public class FenceManager : MonoBehaviour
         }
         else
         {
+            //降りきっている時に上昇するとサウンド
+            if (pos.y == _downLimit)
+            {
+                audioSource.PlayOneShot(Fence);
+            }
             if (pos.y < 0)
             {
+                // 下降中から上昇中に切り替わったタイミングでサウンド
+                if (isDuringDownward)
+                {
+                    audioSource.PlayOneShot(Fence);
+                }
+                // 位置を上げる
                 pos.y += _velocity;
+
+                isDuringDownward = false;
+                isDuringUpward = true;
             }
             else
             {
