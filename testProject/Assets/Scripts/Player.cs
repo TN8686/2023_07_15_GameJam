@@ -45,6 +45,13 @@ public class Player : MonoBehaviour
     [SerializeField]
     float rot_decreasePerSecond = 0.5f;
 
+    [SerializeField]
+    private float antisepticTime_ = 0;
+    public float AntisepticTime {
+        get { return antisepticTime_; }
+        set { antisepticTime_ = value; }
+    }
+
     // それぞれのライン.
     [SerializeField]
     float rot_max = 100f;
@@ -172,7 +179,16 @@ public class Player : MonoBehaviour
         }
 
         // ゲージ減少.
-        rot_ -= rot_decreasePerSecond * Time.deltaTime;
+        if (antisepticTime_ > 0)
+        {
+            antisepticTime_ -= Time.deltaTime;
+        }
+        else
+        {
+            antisepticTime_ = 0;
+            rot_ -= rot_decreasePerSecond * Time.deltaTime;
+        }
+
         if(isDeath())
         {
             rot_ = 0;
@@ -219,6 +235,26 @@ public class Player : MonoBehaviour
 #else
     Application.Quit();//ゲームプレイ終了
 #endif
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // 防腐剤処理. 
+        if (collision.gameObject.tag == "Antiseptic")
+        {
+            antisepticTime_ += collision.gameObject.GetComponent<AntisepticManager>().AntisepticTime;
+            collision.gameObject.SetActive(false);
+        }
+
+    }
+
+    public void Damage(float damage)
+    {
+        rot_ -= damage;
+        if (rot_ < 0)
+        {
+            rot_ = 0;
         }
     }
 }

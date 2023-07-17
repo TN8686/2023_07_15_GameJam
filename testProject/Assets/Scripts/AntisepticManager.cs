@@ -5,7 +5,7 @@ using UnityEngine;
 public class AntisepticManager : MonoBehaviour
 {
     [SerializeField]
-    private float antisepticTime = 5000;
+    private float antisepticTime = 10;
     public float AntisepticTime { get { return antisepticTime; } }
     // Start is called before the first frame update
     void Start()

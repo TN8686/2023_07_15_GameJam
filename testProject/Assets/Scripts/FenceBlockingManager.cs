@@ -18,8 +18,8 @@ public class FenceBlockingManager : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log(collision.gameObject.name);
-        if (collision.gameObject.name != "Fence")
+        //Debug.Log(collision.gameObject.name);
+        if(collision.gameObject.tag == "Player" || collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "Block")
         {
             _count++;
         }
@@ -28,7 +28,7 @@ public class FenceBlockingManager : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.name != "Fence")
+        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "Block")
         {
             _count--;
         }
