@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class GroundCheck : MonoBehaviour
 {
-    private string groundTag = "Ground";
+    //private string groundTag = "Ground";
+    [SerializeField]
+    private string[] groundTag_ = { "Ground", "Block" };
+
     private bool isGround = false;
     private bool isGroundEnter, isGroundStay, isGroundExit;
 
@@ -28,17 +31,20 @@ public class GroundCheck : MonoBehaviour
         return isGround;
     }
 
-    public bool IsGroundEntor()
+    public bool IsGroundEnter()
     {
         return isGroundEnter;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == groundTag)
+        foreach (string tag in groundTag_)
         {
-            isGroundEnter = true;
-            //Debug.Log("isGroundEntor");
+            if (collision.tag == tag)
+            {
+                isGroundEnter = true;
+                //Debug.Log("isGroundEntor");
+            }
         }
     }
 
@@ -46,23 +52,26 @@ public class GroundCheck : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.tag == groundTag)
+        foreach (string tag in groundTag_)
         {
-            isGroundStay = true;
-            //Debug.Log("isGroundStay");
+            if (collision.tag == tag)
+            {
+                isGroundStay = true;
+                //Debug.Log("isGroundStay");
+            }
         }
     }
 
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-
-
-        if (collision.tag == groundTag)
+        foreach (string tag in groundTag_)
         {
-            isGroundExit = true;
-
-            //Debug.Log("isGroundExit");
+            if (collision.tag == tag)
+            {
+                isGroundExit = true;
+                //Debug.Log("isGroundExit");
+            }
         }
     }
 
