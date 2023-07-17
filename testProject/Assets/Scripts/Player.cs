@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
@@ -110,6 +111,9 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // とりあえずのシーン遷移.
+        sceneMove();
+
         Vector2 v = rbody2D_.velocity;          // 加速度を取得.
         isGround_ = groundCheck_.IsGround();    // 接地判定を取得.
 
@@ -197,5 +201,24 @@ public class Player : MonoBehaviour
     public bool isDeath()
     {
         return (rot_ <= 0);
+    }
+
+    public void sceneMove()
+    {
+        // Tでタイトルシーン.
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            SceneManager.LoadScene("TitleScene");
+        }
+        //Escが押された時
+        if (Input.GetKey(KeyCode.Escape))
+        {
+
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+#else
+    Application.Quit();//ゲームプレイ終了
+#endif
+        }
     }
 }
