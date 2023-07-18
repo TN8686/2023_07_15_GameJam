@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Block
   - Antiseptic
+  - ED_Bone
   layers:
   - Default
   - TransparentFX

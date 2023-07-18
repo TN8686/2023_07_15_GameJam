@@ -52,8 +52,6 @@ public class Enemy_Dog : MonoBehaviour
 
     // 攻撃判定.
     [SerializeField]
-    private bool isAttackHit_ = false;
-    [SerializeField]
     private Enemy_Attack AttackCheck_;
 
     // 視界.
@@ -73,6 +71,10 @@ public class Enemy_Dog : MonoBehaviour
 
     private Animator animator_;
 
+    private bool isAttackJump_ = false;
+
+    [SerializeField]
+    private float flipWait_ = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -86,12 +88,144 @@ public class Enemy_Dog : MonoBehaviour
 
     private void FixedUpdate()
     {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (flipWait_ > 0)
+        {
+            flipWait_ -= Time.deltaTime;
+        }
+
+        // 各種判定チェック.
+        isGround_ = groundCheck_Down_.IsGround();
+        isGround_Front_ = groundCheck_Front_.IsGround();
+        isGround_FrontDown_ = groundCheck_DownFront_.IsGround();
+
+        if (isDeath_ && isGround_)
+        {
+            GetComponent<Rigidbody2D>().simulated = false;
+            animator_.SetBool("Death", true);
+            return;
+        }
+
+
+        // 視界チェック.
+        if (!isAttack_) {
+            isRecognition_ = sightCheck_.IsGround();
+        }
+
+        if (isRecognition_)
+        {
+            isRecognition_ = false;
+            isAttack_ = true;
+            attackWait_ = attackWaitInitTime_;
+        }
+
+        // 攻撃中か否か.
+        if (isAttack_)
+        {
+
+
+            // 攻撃がヒットしたら.
+            if (attackWait_ <= -1f && AttackCheck_.IsGroundEnter())
+            {
+                isDeath_ = true;
+            }
+
+            // 着地で終了.
+            if (attackWait_ <= -1.2f && isGround_)
+            {
+                isAttackJump_ = false;
+                transform.GetChild(3).gameObject.SetActive(false);
+
+                base_PosX_ = transform.position.x;
+
+                if(attackWait_ <= -2f)
+                {
+                    isAttack_ = false;
+                }
+            }
+
+            attackWait_ -= Time.deltaTime;
+
+            if (isGround_ && attackWait_ <= 0 && attackWait_ >= -0.2f)
+            {
+                var jump = jumpForce_;
+                // ジャンプ.
+                if (isLeft_)
+                {
+                    jump.x *= -1;
+                }
+                GetComponent<Rigidbody2D>().AddForce(jump, ForceMode2D.Impulse);
+                GetComponent<AudioSource>().Play();
+                attackWait_ = -1f;
+                isGround_ = false;
+                isAttackJump_ = true;
+                transform.GetChild(3).gameObject.SetActive(true);
+                
+            }
+
+
+            // アニメーション.
+            if (isGround_)
+            {
+                animator_.SetTrigger("Wait");
+            }
+            else
+            {
+                animator_.SetTrigger("Attack");
+            }
+
+
+        }
+        else
+        {
+            var pos = transform.position;
+
+            // 壁と崖で左右反転.
+            if (flipWait_ <= 0)
+            {
+                if ((isGround_Front_ || !isGround_FrontDown_))
+                {
+                    // 反転したらその分往復の基準点をズラす.
+                    if (isLeft_)
+                    {
+                        base_PosX_ = pos.x + (move_width_ * 0.5f + 0.25f);
+                    }
+                    else
+                    {
+                        base_PosX_ = pos.x - (move_width_ * 0.5f + 0.25f);
+                    }
+                    isLeft_ = !isLeft_;
+                    flipWait_ = 0.2f;
+                }
+                else
+                {
+                    if (pos.x <= base_PosX_ - move_width_ * 0.5f)
+                    {
+                        isLeft_ = false;
+                        flipWait_ = 0.2f;
+                    }
+                    else if (pos.x >= base_PosX_ + move_width_ * 0.5f)
+                    {
+                        isLeft_ = true;
+                        flipWait_ = 0.2f;
+                    }
+                }
+            }
+
+            animator_.SetTrigger("Walk");
+        }
+
+
 
         Vector2 v = rbody2D_.velocity;
 
         var s = transform.localScale;
 
-        if (isDeath_)
+        if (isDeath_ && isGround_)
         {
             v = Vector2.zero;
         }
@@ -99,7 +233,10 @@ public class Enemy_Dog : MonoBehaviour
         {
             if (isAttack_)
             {
-
+                if (!isAttackJump_)
+                {
+                    v.x = 0;
+                }
             }
             else
             {
@@ -121,101 +258,6 @@ public class Enemy_Dog : MonoBehaviour
         transform.localScale = s;
 
         rbody2D_.velocity = v;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (isDeath_)
-        {
-            animator_.SetBool("Death", true);
-            return;
-        }
-
-        // 各種判定チェック.
-        isGround_ = groundCheck_Down_.IsGround();
-        isGround_Front_ = groundCheck_Front_.IsGround();
-        isGround_FrontDown_ = groundCheck_DownFront_.IsGround();
-
-        // 視界チェック.
-        if (!isAttack_) {
-            isRecognition_ = sightCheck_.IsGround();
-        }
-
-        if (isRecognition_)
-        {
-            isRecognition_ = false;
-            isAttack_ = true;
-            attackWait_ = attackWaitInitTime_;
-        }
-
-        // 攻撃中か否か.
-        if (isAttack_)
-        {
-            // 攻撃がヒットしたら.
-            if (attackWait_ <= -1f && AttackCheck_.IsGroundEnter())
-            {
-                isDeath_ = true;
-            }
-
-            // 着地で終了.
-            if (attackWait_ <= -1.5f && isGround_)
-            {
-                isAttack_ = false;
-                base_PosX_ = transform.position.x;
-            }
-
-            attackWait_ -= Time.deltaTime;
-            if (attackWait_ <= 0 && attackWait_ > -1f)
-            {
-                var v = jumpForce_;
-                // ジャンプ.
-                if (isLeft_)
-                {
-                    v.x *= -1;
-                }
-                GetComponent<Rigidbody2D>().AddForce(v, ForceMode2D.Impulse);
-                GetComponent<AudioSource>().Play();
-                attackWait_ = -1f;
-            }
-
-
-            // アニメーション.
-            if (isGround_)
-            {
-                if (attackWait_ > 0)
-                {
-                    animator_.SetTrigger("Wait");
-                }
-            }
-            else
-            {
-                animator_.SetTrigger("Attack");
-            }
-
-
-        }
-        else
-        {
-            isAttackHit_ = false;
-            // 左右反転.
-            if (isGround_Front_ || !isGround_FrontDown_)
-            {
-                isLeft_ = !isLeft_;
-            }
-
-            var pos = transform.position;
-
-            if (pos.x <= base_PosX_ - move_width_ * 0.5)
-            {
-                isLeft_ = false;
-            }
-            else if (pos.x >= base_PosX_ + move_width_ * 0.5)
-            {
-                isLeft_ = true;
-            }
-            animator_.SetTrigger("Walk");
-        }
 
     }
 }

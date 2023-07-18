@@ -76,7 +76,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.1}
+  m_Size: {x: 0.9, y: 0.1}
   m_EdgeRadius: 0
 --- !u!114 &7649001616015760205
 MonoBehaviour:
@@ -90,6 +90,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d980b2e0249e63d4c911e8d8da05e370, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  groundTag_:
+  - Ground
+  - Block
 --- !u!1 &2620275969434991387
 GameObject:
   m_ObjectHideFlags: 0
@@ -145,8 +148,9 @@ MonoBehaviour:
   FallMaxSpeed_: 20
   fallRespawnPoint: {x: 0, y: 0, z: 0}
   isGround_: 0
-  rot_: 0
-  rot_decreasePerSecond: 0.5
+  rot_: 100
+  rot_decreasePerSecond_: 0.5
+  antisepticTime_: 0
   rot_max: 100
   rotLine_01: 60
   rotLine_02: 30
@@ -154,6 +158,10 @@ MonoBehaviour:
   - {fileID: 9100000, guid: cf2c64a085f7e9a47b0487bc8859c914, type: 2}
   - {fileID: 9100000, guid: 16a3adc4784fdf04ba0fcc740734b58f, type: 2}
   - {fileID: 9100000, guid: 6e80e37f77a26f642b6f70ed8c479d86, type: 2}
+  unDead_: 0
+  isEvent_: 0
+  black_: {fileID: 0}
+  bgm_: {fileID: 0}
 --- !u!212 &6137906660274245425
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -276,8 +284,8 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.22, y: 2}
-  m_EdgeRadius: 0
+  m_Size: {x: 0.9, y: 1.8}
+  m_EdgeRadius: 0.05
 --- !u!70 &8720928627299771189
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -285,7 +293,7 @@ CapsuleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2620275969434991387}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -311,7 +319,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1.4, y: 2}
+  m_Size: {x: 1, y: 1.9}
   m_Direction: 0
 --- !u!95 &7685389981810706318
 Animator:

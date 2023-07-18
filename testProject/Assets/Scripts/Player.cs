@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -43,7 +42,13 @@ public class Player : MonoBehaviour
 
     // àÍïbÇ†ÇΩÇËÇÃå∏è≠ó .
     [SerializeField]
-    float rot_decreasePerSecond = 0.5f;
+    float rot_decreasePerSecond_ = 0.5f;
+
+    public float Rot_decreasePerSecond
+    {
+        get { return rot_decreasePerSecond_; }
+        set { rot_decreasePerSecond_ = value; }
+    }
 
     [SerializeField]
     private float antisepticTime_ = 0;
@@ -61,9 +66,35 @@ public class Player : MonoBehaviour
     float rotLine_02 = 30f;
 
     [SerializeField]
-    private AnimatorController[] animatorControllerList_;
+    private RuntimeAnimatorController[] animatorControllerList_;
 
     private Animator animator_;
+
+    float restartTime_ = 4f;
+
+    [SerializeField]
+    bool unDead_ = false;
+    public bool UnDead
+    {
+        get { return unDead_; }
+        set { unDead_ = value; }
+    }
+
+    [SerializeField]
+    bool isEvent_ = false;
+    public bool IsEvent
+    {
+        get { return isEvent_; }
+        set { isEvent_ = value; }
+    }
+
+    [SerializeField]
+    private UI_Curtain black_;
+
+    private bool isChangeCurtain_ = false;
+
+    [SerializeField]
+    private AudioSource bgm_;
 
     // Start is called before the first frame update
     void Start()
@@ -122,7 +153,7 @@ public class Player : MonoBehaviour
         sceneMove();
 
         Vector2 v = rbody2D_.velocity;          // â¡ë¨ìxÇéÊìæ.
-        isGround_ = groundCheck_.IsGround();    // ê⁄ínîªíËÇéÊìæ.
+        isGround_ = (v.y < 0.1) && groundCheck_.IsGround();    // óéâ∫éûÇÃÇ›ê⁄ínîªíËÇéÊìæ.
 
         var pos = transform.position;
 
@@ -182,17 +213,37 @@ public class Player : MonoBehaviour
         if (antisepticTime_ > 0)
         {
             antisepticTime_ -= Time.deltaTime;
+
         }
         else
         {
             antisepticTime_ = 0;
-            rot_ -= rot_decreasePerSecond * Time.deltaTime;
+            rot_ -= rot_decreasePerSecond_ * Time.deltaTime;
+            if (unDead_ && rot_ <= 1)
+            {
+                rot_ = 1f;
+            }
         }
 
         if(isDeath())
         {
             rot_ = 0;
             animator_.SetBool("Death", true);
+
+            if (!isEvent_)
+            {
+                bgm_.Stop();
+                restartTime_ -= Time.deltaTime;
+            }
+            if (!isChangeCurtain_ && restartTime_ <= 1.1f)
+            {
+                black_.ChangeColor(new Color(0,0,0,1), 1f);
+                isChangeCurtain_ = true;
+            }
+            if (restartTime_ <= 0f)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
         }
 
     }
@@ -245,6 +296,13 @@ public class Player : MonoBehaviour
         {
             antisepticTime_ += collision.gameObject.GetComponent<AntisepticManager>().AntisepticTime;
             collision.gameObject.SetActive(false);
+        }
+
+        // ñhïÖç‹èàóù. 
+        if (collision.gameObject.tag == "ED_Bone")
+        {
+            rot_ = 0;
+            unDead_ = false;
         }
 
     }
