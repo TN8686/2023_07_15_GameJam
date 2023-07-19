@@ -180,7 +180,7 @@ public class ED_Event : MonoBehaviour
             float a = black_.GetComponent<Image>().color.a;
             if (Input.GetKey(KeyCode.Space) && a <= 0)
             {
-                black_.GetComponent<UI_Curtain>().ChangeColor(new Color(0f, 0f, 0f, 1f), 1f);
+                black_.GetComponent<ImageColorLeap>().ChangeColor(new Color(0f, 0f, 0f, 1f), 1f);
             }
             lain_.volume = 1f - a;
 

@@ -8,7 +8,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
-    private Rigidbody2D rbody2D_;
+    private Rigidbody2D rigidBody2D_;
 
     // ジャンプ力.
     [SerializeField]
@@ -30,7 +30,6 @@ public class Player : MonoBehaviour
     [SerializeField]
     private bool isGround_ = false;
     private GroundCheck groundCheck_;
-
 
     // 傷み度合.
     [SerializeField]
@@ -57,13 +56,32 @@ public class Player : MonoBehaviour
         set { antisepticTime_ = value; }
     }
 
+    [SerializeField]
+    private Color antisepticColor_;
+
+    private Color defaultColor_;
+
     // それぞれのライン.
     [SerializeField]
-    float rot_max = 100f;
+    private float rot_max = 100f;
+    public float Rot_max
+    {
+        get { return rot_max; }
+    }
+
     [SerializeField]
-    float rotLine_01 = 60f;
+    private float rotLine_01 = 60f;
+    public float RotLine_01
+    {
+        get { return rotLine_01; }
+    }
+
     [SerializeField]
-    float rotLine_02 = 30f;
+    private float rotLine_02 = 30f;
+    public float RotLine_02
+    {
+        get { return rotLine_02; }
+    }
 
     [SerializeField]
     private RuntimeAnimatorController[] animatorControllerList_;
@@ -89,19 +107,21 @@ public class Player : MonoBehaviour
     }
 
     [SerializeField]
-    private UI_Curtain black_;
+    private ImageColorLeap black_;
 
     private bool isChangeCurtain_ = false;
 
     [SerializeField]
     private AudioSource bgm_;
 
+    [SerializeField]
+    private GameObject[] blood_;
     // Start is called before the first frame update
     void Start()
     {
-        rbody2D_ = GetComponent<Rigidbody2D>();
+        rigidBody2D_ = GetComponent<Rigidbody2D>();
         groundCheck_ = transform.GetChild(0).GetComponent<GroundCheck>();
-
+        defaultColor_ = GetComponent<SpriteRenderer>().color;
         animator_ = GetComponent<Animator>();
         fallRespawnPoint = transform.position;
 
@@ -112,9 +132,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector2 v = rbody2D_.velocity;
-        //地面当たり判定
-        //接地判定を得る
+        Vector2 v = rigidBody2D_.velocity;
 
         if (isDeath())
         {
@@ -143,7 +161,7 @@ public class Player : MonoBehaviour
         }
 
 
-        rbody2D_.velocity = v;
+        rigidBody2D_.velocity = v;
     }
 
     // Update is called once per frame
@@ -152,7 +170,7 @@ public class Player : MonoBehaviour
         // とりあえずのシーン遷移.
         sceneMove();
 
-        Vector2 v = rbody2D_.velocity;          // 加速度を取得.
+        Vector2 v = rigidBody2D_.velocity;          // 加速度を取得.
         isGround_ = (v.y < 0.1) && groundCheck_.IsGround();    // 落下時のみ接地判定を取得.
 
         var pos = transform.position;
@@ -169,10 +187,17 @@ public class Player : MonoBehaviour
         {
             // 上下速度を初期化.
             v.y = 0;
-            rbody2D_.velocity = v;
+            rigidBody2D_.velocity = v;
 
             // ジャンプ.
-            rbody2D_.AddForce(new Vector2(0, jumpForce_), ForceMode2D.Impulse);
+            rigidBody2D_.AddForce(new Vector2(0, jumpForce_), ForceMode2D.Impulse);
+        }
+
+        // EDイベント中で死亡ラインまで来たら速度低下.
+        if(isEvent_ && rot_ <= 1f)
+        {
+            MoveSpeed_ = 2.5f;
+            animator_.SetFloat("WalkSpeed", 0.5f);
         }
 
         // アニメーション管理.
@@ -209,14 +234,16 @@ public class Player : MonoBehaviour
             transform.position = pos;
         }
 
+        var c = GetComponent<SpriteRenderer>().color;
         // ゲージ減少.
         if (antisepticTime_ > 0)
         {
+            c = antisepticColor_;
             antisepticTime_ -= Time.deltaTime;
-
         }
         else
         {
+            c = defaultColor_;
             antisepticTime_ = 0;
             rot_ -= rot_decreasePerSecond_ * Time.deltaTime;
             if (unDead_ && rot_ <= 1)
@@ -227,6 +254,8 @@ public class Player : MonoBehaviour
 
         if(isDeath())
         {
+            c = defaultColor_;
+
             rot_ = 0;
             animator_.SetBool("Death", true);
 
@@ -245,7 +274,7 @@ public class Player : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
         }
-
+        GetComponent<SpriteRenderer>().color = c;
     }
 
     // 現在の傷み度合に応じてアニメーターを選択します.
@@ -295,7 +324,6 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag == "Antiseptic")
         {
             antisepticTime_ += collision.gameObject.GetComponent<AntisepticManager>().AntisepticTime;
-            collision.gameObject.SetActive(false);
         }
 
         // 防腐剤処理. 
@@ -313,6 +341,16 @@ public class Player : MonoBehaviour
         if (rot_ < 0)
         {
             rot_ = 0;
+        }
+
+        foreach (GameObject blood in blood_)
+        {
+            blood.transform.position = transform.position + (Vector3)Random.insideUnitCircle;
+
+            float s = Random.value * 0.5f + 0.5f;   // 0.5 ～ 1.0
+            blood.transform.localScale = new Vector2(s, s);
+            blood.GetComponent<AudioSource>().Play();
+            blood.GetComponent<SpriteColorLeap>().Play();
         }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enemy_Dog : MonoBehaviour
 {
-    private Rigidbody2D rbody2D_;
+    private Rigidbody2D rigidBody2D_;
 
     private bool isAttack_ = false;
 
@@ -78,7 +78,7 @@ public class Enemy_Dog : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rbody2D_ = GetComponent<Rigidbody2D>();
+        rigidBody2D_ = GetComponent<Rigidbody2D>();
         base_PosX_ = transform.position.x;
 
         animator_ = GetComponent<Animator>();
@@ -88,6 +88,49 @@ public class Enemy_Dog : MonoBehaviour
 
     private void FixedUpdate()
     {
+
+        Vector2 v = rigidBody2D_.velocity;
+
+        var s = transform.localScale;
+
+        if (isDeath_ && isGround_)
+        {
+            v = Vector2.zero;
+        }
+        else
+        {
+            if (isAttack_)
+            {
+                if (!isAttackJump_)
+                {
+                    v.x = 0;
+                }
+            }
+            else
+            {
+                if (isLeft_)
+                {
+                    s.x = 1;
+                    v.x = -MoveSpeed_;
+                }
+                else
+                {
+                    s.x = -1;
+                    v.x = MoveSpeed_;
+                }
+
+            }
+        }
+
+        if (v.y < -FallMaxSpeed_)
+        {
+            v.y = -FallMaxSpeed_;
+        }
+
+        transform.localScale = s;
+
+        rigidBody2D_.velocity = v;
+
     }
 
     // Update is called once per frame
@@ -218,46 +261,6 @@ public class Enemy_Dog : MonoBehaviour
 
             animator_.SetTrigger("Walk");
         }
-
-
-
-        Vector2 v = rbody2D_.velocity;
-
-        var s = transform.localScale;
-
-        if (isDeath_ && isGround_)
-        {
-            v = Vector2.zero;
-        }
-        else
-        {
-            if (isAttack_)
-            {
-                if (!isAttackJump_)
-                {
-                    v.x = 0;
-                }
-            }
-            else
-            {
-                if (isLeft_)
-                {
-                    s.x = 1;
-                    v.x = -MoveSpeed_;
-                }
-                else
-                {
-                    s.x = -1;
-                    v.x = MoveSpeed_;
-                }
-
-            }
-        }
-
-
-        transform.localScale = s;
-
-        rbody2D_.velocity = v;
 
     }
 }

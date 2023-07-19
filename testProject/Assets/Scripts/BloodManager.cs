@@ -9,6 +9,7 @@ public class BloodManager : MonoBehaviour
     private float fadingSpeed = 0.01f;
 
     // フェードしているか
+    [SerializeField]
     private bool isFading = false;
     // Start is called before the first frame update
     void Start()

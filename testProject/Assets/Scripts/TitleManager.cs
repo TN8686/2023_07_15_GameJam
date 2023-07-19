@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static Unity.Collections.AllocatorManager;
 
 public class TitleManager : MonoBehaviour
 {
@@ -205,15 +206,13 @@ public class TitleManager : MonoBehaviour
                     }
                     endCheck();
                     break;
+
                 case 4:
-                    if (waitTime_ <= 1f)
+                    if (black_.GetComponent<ImageColorLeap>().TargetColor.a < 1f)
                     {
-                        black_.SetActive(true);
-                        c = black_.GetComponent<Image>().color;
-                        c.a = waitTime_ / 1f;
-                        black_.GetComponent<Image>().color = c;
+                        black_.GetComponent<ImageColorLeap>().ChangeColor(new Color(0f, 0f, 0f, 1f), 1f);
                     }
-                    else
+                    else if (black_.GetComponent<ImageColorLeap>().Ratio() >= 1f)
                     {
                         SceneManager.LoadScene("MainGameScene");
                     }
@@ -240,9 +239,6 @@ public class TitleManager : MonoBehaviour
 
             isSEPlayed01_ = false;
             isSEPlayed02_ = false;
-
-
-
             
         }
 
