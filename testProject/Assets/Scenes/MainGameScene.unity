@@ -1052,7 +1052,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2857861436727163813, guid: 7c0644c467f1c8c4f86e416a2117b898, type: 3}
   m_PrefabInstance: {fileID: 534507528}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1593470361}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
@@ -2502,6 +2502,11 @@ MonoBehaviour:
   - {fileID: 874434227}
   audioObj_: {fileID: 1204481607}
   targetPosX_: 30
+--- !u!1 &1593470361 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8553239217728487328, guid: 7c0644c467f1c8c4f86e416a2117b898, type: 3}
+  m_PrefabInstance: {fileID: 534507528}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1669402678
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22556,6 +22561,7 @@ MonoBehaviour:
   - {fileID: 534507530}
   - {fileID: 383317214}
   - {fileID: 2073216955}
+  white_: {fileID: 1593470361}
   player_soul_: {fileID: 1710451777}
   dog_soul_: {fileID: 1698550788}
   lain_: {fileID: 679462158}

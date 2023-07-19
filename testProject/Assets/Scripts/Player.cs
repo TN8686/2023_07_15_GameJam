@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
 
     // èùÇ›ìxçá.
     [SerializeField]
-    float rot_;
+    float rot_ = 100;
     public float getRotRatio()
     {
         return rot_ / rot_max;

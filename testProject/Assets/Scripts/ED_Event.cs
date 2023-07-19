@@ -12,6 +12,9 @@ public class ED_Event : MonoBehaviour
     [SerializeField]
     private Image[] images_;
 
+    [SerializeField]
+    private GameObject white_;
+
     float waitTime_ = 0;
 
     private bool isBGMPlay_ = false;
@@ -46,15 +49,17 @@ public class ED_Event : MonoBehaviour
         }
 
         waitTime_ += Time.deltaTime;
+        ImageColorLeap w = white_.GetComponent<ImageColorLeap>();
 
-        var c = images_[0].color;
-        c.a = (waitTime_ - 4f) / 1;
+        Color c;
 
-        if (c.a > 1)
+        if (waitTime_ < 5f)
         {
-            c.a = 1;
+            if (waitTime_ > 4f && w.TargetColor.a <= 0)
+            {
+                w.ChangeColor(new Color(1f, 1f, 1f, 1f), 1f);
+            }
         }
-        images_[0].color = c;
 
         float vol = waitTime_ - 4f;
         if(vol < 0)
@@ -142,14 +147,10 @@ public class ED_Event : MonoBehaviour
 
         if(waitTime_ > 36.75f)
         {
-            c = images_[0].color;
-            c.a = 1 - (waitTime_ - 36.75f) / 1;
-
-            if (c.a > 1)
+            if (w.TargetColor.a >= 1f)
             {
-                c.a = 1;
+                w.ChangeColor(new Color(1f, 1f, 1f, 0f), 1f);
             }
-            images_[0].color = c;
 
             staffedRoll_.gameObject.SetActive(true);
 
